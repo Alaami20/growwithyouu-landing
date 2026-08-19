@@ -9,7 +9,9 @@ export default defineConfig({
         company:resolve(import.meta.dirname,'company.html'),
         ventures:resolve(import.meta.dirname,'ventures.html'),
         team:resolve(import.meta.dirname,'team.html'),
-        contact:resolve(import.meta.dirname,'contact.html')
+        contact:resolve(import.meta.dirname,'contact.html'),
+        apply:resolve(import.meta.dirname,'apply.html'),
+        thanks:resolve(import.meta.dirname,'thanks.html')
       }
     }
   }

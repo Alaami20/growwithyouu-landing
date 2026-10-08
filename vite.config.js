@@ -6,6 +6,8 @@ export default defineConfig({
     rollupOptions:{
       input:{
         main:resolve(import.meta.dirname,'index.html'),
+        crypora:resolve(import.meta.dirname,'crypora.html'),
+        tripfly:resolve(import.meta.dirname,'tripfly.html'),
         company:resolve(import.meta.dirname,'company.html'),
         ventures:resolve(import.meta.dirname,'ventures.html'),
         team:resolve(import.meta.dirname,'team.html'),

@@ -39,3 +39,32 @@ Run `npm test`, `npm run build` and `git diff --check`. Tests cover password and
 Included views support members, reporting assignments, tasks, milestones, campaigns, manual finance records, manual applications, audit logs and JSON report exports. Public website design and routes are preserved.
 
 Remaining work: public website content editing/rollback, graphical organization chart, live marketing publishing/metrics, analytics, billing, Drive recruitment import/CV access, provider connections, App Store integration, automatic reports and verified roster/roadmap import. These remain explicitly unconnected or manual; no end-to-end completion is implied by a successful build. No real-money cryptocurrency trades are supported or performed.
+
+## Workspace redesign review — 8 November 2026
+
+This branch isolates private dashboard CSS in a Shadow DOM, lazy-loads its JavaScript,
+adds a fixed scrolling sidebar, searchable/collapsible navigation, mobile drawer,
+sticky top bar and light/dark preference. Logout is in Settings. Organization Chart
+uses React Flow and Dagre with saved manager edges, pan/zoom, fit, minimap,
+collapse/expand and profile editing. The existing member table remains available.
+No imported roster or fabricated integrations are included. Public page markup and
+styles are preserved; the public bundle no longer eagerly loads dashboard code.
+
+The Blob write fix obtains the authoritative conditional-write ETag with `head`
+before downloading the body. Regression coverage verifies mismatched download/API
+ETags, atomic audits and stale-edit protection. This addresses the observed edit
+conflict, but requires a live save/reload verification after an approved deployment.
+
+Validation: `npm test` 18/18; `npm run build` passes. Vite reports dependency
+`use client` directive warnings; this application renders in the browser.
+Browser checks of authenticated redesigned pages, all six viewport widths,
+light/dark screenshots and full feature acceptance are still pending.
+
+Remaining work from the overhaul brief: richer dashboard analytics; advanced
+member table controls; verified private team import; calendar; recruitment pipeline;
+finance summaries; editorial draft/publish/rollback; additional engineering views;
+source-backed charts and exports. Existing manual record editors continue to work.
+GitHub App keys, installation/repository mappings, signed webhook and authenticated
+scheduler configuration must still be supplied in provider dashboards. Analytics,
+billing and automated Drive imports remain unavailable until actually connected.
+The redesign must remain a review PR until explicit production approval.

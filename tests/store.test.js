@@ -30,9 +30,16 @@ test('webhook jobs deduplicate, claims are exclusive and expired leases recover'
  const recovered=await store.change(s=>claimJob(s,Date.now()+601000));assert.equal(recovered.attempts,2);assert.notEqual(recovered.lease,claimed.lease);
 });
 test('private store rejects public blob responses and does not cache authoritative reads',async()=>{
- let options;const store=createStore({get:async(path,opts)=>(options=opts,{statusCode:200,stream:new Blob(['{}']).stream(),blob:{url:'https://test.public.blob.vercel-storage.com/data',size:2}})}, {BLOB_READ_WRITE_TOKEN:'test'});
+ let options;const store=createStore({head:async()=>({etag:'api-tag'}),get:async(path,opts)=>(options=opts,{statusCode:200,stream:new Blob(['{}']).stream(),blob:{url:'https://test.public.blob.vercel-storage.com/data',size:2}})}, {BLOB_READ_WRITE_TOKEN:'test'});
  await assert.rejects(()=>store.read(),/Private storage required/);assert.equal(options.useCache,false);assert.equal(options.access,'private');
 });
 test('rate windows expire and old IP identifiers are pruned',()=>{
  const state={buckets:{}};assert.equal(consumeBudget(state,'one',1,1000,0),true);assert.equal(consumeBudget(state,'one',1,1000,500),false);assert.equal(consumeBudget(state,'two',1,1000,1001),true);assert.equal(state.buckets.one,undefined);
+});
+
+test('updates use authoritative API metadata when download representation ETags differ',async()=>{
+ const store=memoryStore({representationEtags:true});
+ const member=await store.change(s=>mutateState(s,{entity:'members',values:{name:'Owner',status:'active'}},'ceo'));
+ const updated=await store.change(s=>mutateState(s,{entity:'members',id:member.id,version:1,values:{name:'Updated Owner'}},'ceo'));
+ assert.equal(updated.version,2);const {value}=await store.read();assert.equal(value.members[0].name,'Updated Owner');assert.equal(value.audit_events.length,2);
 });

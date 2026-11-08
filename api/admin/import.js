@@ -1,0 +1,5 @@
+import {guard} from '../../server/access.js';
+import {SOURCE} from '../../server/bootstrap.js';
+import {importCompany} from '../../server/import.js';
+export const config={api:{bodyParser:{sizeLimit:'256kb'}}};
+export default async function handler(req,res){const access=await guard(req,res);if(!access)return;if(req.method!=='POST')return res.status(405).end();try{if(JSON.stringify(req.body||{}).length>200000)return res.status(413).json({error:'Import too large'});const preview=req.body?.preview===true;const manifest=req.body?.manifest;if(preview){const {value}=await access.store.read();return res.json({preview:true,result:importCompany(structuredClone(value),manifest,access.user.id)});}const result=await access.store.change(state=>{const result=importCompany(state,manifest,access.user.id);if(manifest.version==='2026-11-08-verified-v1')state.company_bootstrap={status:'imported',ref:SOURCE.ref,source:'CEO-authorized private source upload',result,at:new Date().toISOString()};return result;});return res.json({result});}catch(e){return res.status(e.status||400).json({error:e.status?e.message:'Import validation failed'});}}

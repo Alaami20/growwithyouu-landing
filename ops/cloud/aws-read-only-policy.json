@@ -1,0 +1,9 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Sid": "CeoReadOnlyInventoryAndBilling",
+    "Effect": "Allow",
+    "Action": ["sts:GetCallerIdentity", "ec2:DescribeRegions", "ec2:DescribeInstances", "s3:ListAllMyBuckets", "rds:DescribeDBInstances", "lambda:ListFunctions", "ecs:ListClusters", "eks:ListClusters", "bedrock:ListCustomModels", "cloudwatch:DescribeAlarms", "tag:GetResources", "budgets:ViewBudget", "billing:GetCredits", "billing:GetCreditAllocationHistory"],
+    "Resource": "*"
+  }]
+}

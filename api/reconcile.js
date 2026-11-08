@@ -2,6 +2,7 @@ import {timingSafeEqual} from 'node:crypto';
 import {headers} from '../server/access.js';
 import {storage,enqueue,claimJob} from '../server/store.js';
 import {repositoryMap,snapshotRepository} from '../server/github.js';
+export const maxDuration=300;
 export default async function handler(req,res){
  headers(res);const secret=process.env.CRON_SECRET,received=req.headers.authorization||'',expected='Bearer '+secret;
  if(!secret||Buffer.byteLength(received)!==Buffer.byteLength(expected)||!timingSafeEqual(Buffer.from(received),Buffer.from(expected)))return res.status(401).end();

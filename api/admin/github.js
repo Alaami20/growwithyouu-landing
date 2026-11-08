@@ -1,0 +1,3 @@
+import {guard} from '../../server/access.js';
+import {repositoryMap} from '../../server/github.js';
+export default async function handler(req,res){const a=await guard(req,res);if(!a)return;if(req.method!=='GET')return res.status(405).end();const repos=Object.keys(repositoryMap());if(!repos.length)return res.json({status:'Not connected',repositories:[],updated_at:null});const {data,error}=await a.db.from('github_snapshots').select('repository,snapshot,updated_at').in('repository',repos);if(error)return res.status(503).json({error:'GitHub storage not configured'});res.json({status:data.length?'Cached synchronized data':'Awaiting first synchronization',repositories:data.map(x=>x.snapshot),updated_at:data.length?data.map(x=>x.updated_at).sort()[0]:null});}

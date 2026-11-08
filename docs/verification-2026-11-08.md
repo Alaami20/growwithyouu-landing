@@ -88,8 +88,9 @@ JSON export and CEO attention notifications are implemented. Cloud cost summarie
 conserve explicit shared allocation, keep currencies separate and retain unknown
 ownership as Unallocated. Credit burn/exhaustion estimates require complete,
 finalized same-lot credit history; absent history remains unavailable. These
-follow-up features are NOT deployed yet, per the latest instruction requiring
-explicit production approval.
+follow-up features are covered by the earlier explicit push-and-deploy approval.
+Production verification must follow the passing PR merge; do not infer live status
+from local checks alone.
 
 Dashboard validation: 30 Node tests and production build pass. The existing Azure
 CI runner uses a managed identity; a separate read-only collection proposal in

@@ -2,3 +2,5 @@
 
 /* CEO-requested white appearance, including navigation. */
 .cc{--bg:#fafafa;--panel:#fff;--ink:#17243a;--muted:#687486;--line:#e8e8e8;--gold:#a5704e}.cc aside{background:#fff;color:#536176;border-right:1px solid var(--line)}.cc aside strong{color:#9b6d50}.cc nav button.selected{background:#f7eee7;color:#855735}.cc nav label{color:#8d96a4}
+
+.cc .login{align-self:flex-start;height:auto}

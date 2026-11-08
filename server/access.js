@@ -1,55 +1,17 @@
-import {createClient} from '@supabase/supabase-js';
-import {authorize} from './policy.js';
-
-export function headers(res) {
-  res.setHeader('Cache-Control','no-store');
-  res.setHeader('X-Robots-Tag','noindex, nofollow');
-  res.setHeader('X-Content-Type-Options','nosniff');
-  res.setHeader('Referrer-Policy','no-referrer');
-}
-
-export async function guard(req,res) {
-  headers(res);
-  const env=process.env;
-  if(!env.SUPABASE_URL||!env.SUPABASE_ANON_KEY||!env.SUPABASE_SERVICE_ROLE_KEY||!env.CEO_USER_ID||!env.CEO_VERIFIED_EMAIL||!env.ADMIN_ORIGIN) {
-    res.status(503).json({error:'Admin not configured'});
-    return null;
-  }
-  if(req.headers.origin && req.headers.origin!==env.ADMIN_ORIGIN) {
-    res.status(403).json({error:'Forbidden origin'});
-    return null;
-  }
-  if(!['GET','HEAD'].includes(req.method) && req.headers.origin!==env.ADMIN_ORIGIN) {
-    res.status(403).json({error:'Origin required'});
-    return null;
-  }
-  const token=(req.headers.authorization||'').match(/^Bearer\s+([^\s]+)$/i)?.[1];
-  if(!token) {
-    res.status(401).json({error:'Sign in required'});
-    return null;
-  }
-  const identity=createClient(env.SUPABASE_URL,env.SUPABASE_ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
-  let user,error;
-  try {
-    ({data:{user},error}=await identity.auth.getUser(token));
-  } catch {
-    res.status(503).json({error:'Identity service unavailable'});
-    return null;
-  }
-  if(error||!authorize(user,token,env)) {
-    res.status(403).json({error:'Verified CEO identity and MFA required'});
-    return null;
-  }
-  const db=createClient(env.SUPABASE_URL,env.SUPABASE_SERVICE_ROLE_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
-  const limit=await db.rpc('admin_take_rate_limit',{subject:user.id});
-  if(limit.error) {
-    res.status(503).json({error:'Security service unavailable'});
-    return null;
-  }
-  if(!limit.data) {
-    res.setHeader('Retry-After','60');
-    res.status(429).json({error:'Too many requests'});
-    return null;
-  }
-  return {db,user};
-}
+import {configured,cookieToken,verifySession,originAllowed,runtimeAuthEnv} from './auth.js';
+import {storage,consumeBudget} from './store.js';
+export function headers(res){res.setHeader('Cache-Control','no-store');res.setHeader('X-Robots-Tag','noindex, nofollow');res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','no-referrer');}
+export function createGuard(env=process.env,store=storage){return async function(req,res){
+ headers(res);
+ if(!configured(env)){res.status(503).json({error:'Private login or storage not configured'});return null;}
+ if(!originAllowed(req,env)){res.status(403).json({error:'Forbidden origin'});return null;}
+ const token=cookieToken(req);if(!token){res.status(401).json({error:'Sign in required'});return null;}
+ try{
+  const {value:security}=await store.read('security');const user=verifySession(token,security.epoch,runtimeAuthEnv(env,security));
+  if(!user){res.setHeader('Set-Cookie',`${'__Host-gwu_admin'}=; Path=/; Secure; HttpOnly; SameSite=Strict; Max-Age=0`);res.status(401).json({error:'Session ended. Sign in again.'});return null;}
+  const allowed=await store.change(state=>consumeBudget(state,'api:'+user.jti,120,60000),'security');
+  if(!allowed){res.setHeader('Retry-After','60');res.status(429).json({error:'Too many requests'});return null;}
+  return {user,store};
+ }catch{res.status(503).json({error:'Private storage unavailable'});return null;}
+};}
+export const guard=createGuard();

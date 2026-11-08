@@ -1,10 +1,5 @@
 export const kinds = ['tasks','milestones','sprints','campaigns','goals','releases','incidents','approvals','partnerships','investors','finance','mentorship','applications','updates'];
 export const CEO_EMAIL = 'alaamiari@growwithyouu.com';
-export function authorize(user, token, env) {
-  if (!env.CEO_USER_ID || env.CEO_VERIFIED_EMAIL?.toLowerCase() !== CEO_EMAIL) return false;
-  if (!user || user.id !== env.CEO_USER_ID || !user.email_confirmed_at || user.email?.toLowerCase() !== env.CEO_VERIFIED_EMAIL.toLowerCase()) return false;
-  try { return JSON.parse(Buffer.from(token.split('.')[1], 'base64url')).aal === 'aal2'; } catch { return false; }
-}
 const statuses = ['planned','active','blocked','review','completed','inactive','approved','rejected'];
 export function validateRecord(input) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) throw Error('Object required');

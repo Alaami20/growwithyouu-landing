@@ -2,3 +2,7 @@ User-agent: *
 Allow: /
 
 Sitemap: https://growwithyouu.com/sitemap.xml
+
+User-agent: *
+Disallow: /admin
+Disallow: /api/admin

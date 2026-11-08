@@ -13,7 +13,7 @@ Implementation branch: `feat/ceo-command-center`. This is a backend-dependent im
 ## Activation
 
 1. Provision Supabase and apply `database/001_command_center.sql`, then `database/002_github_sync.sql` as database owner.
-2. Create and verify the CEO account; disable public signups. Configure the exact account ID and verified email using the server environment variables in `.env.example`. Complete TOTP enrollment on first login.
+2. Create and verify the CEO account; disable public signups. Configure the exact account ID and verified email using the server environment variables in `.env.example`. Configure the Magic Link email template to include `{{ .Token }}` so it sends a numeric code rather than a link. Enable email OTP and production SMTP delivery for the pre-created CEO account; the client sets `shouldCreateUser: false`. Complete TOTP enrollment after the email-code verification on first login. No password is required by the dashboard.
 3. Configure server-only Supabase credentials and the exact `ADMIN_ORIGIN`. Never put service credentials in Vite client variables.
 4. Install a GitHub App on selected repositories with read permissions for metadata, contents, issues, pull requests and Actions. Optional protection/security views need their corresponding read permissions. Configure the installation, private key and authorized repository-to-project map.
 5. Set a webhook secret and subscribe the App to relevant repository activity at `/api/github-webhook`. Configure an authenticated scheduler to call `/api/reconcile` with `Authorization: Bearer <CRON_SECRET>` at least hourly. No scheduler is provisioned by this branch. A call processes at most three jobs; increase scheduler frequency if backlog grows.

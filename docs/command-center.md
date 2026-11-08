@@ -68,3 +68,31 @@ GitHub App keys, installation/repository mappings, signed webhook and authentica
 scheduler configuration must still be supplied in provider dashboards. Analytics,
 billing and automated Drive imports remain unavailable until actually connected.
 The redesign must remain a review PR until explicit production approval.
+
+## Company and cloud implementation — 8 November 2026
+
+Private source manifest: Crypto-Intel PR #54, pinned in server/bootstrap.js. It
+contains 30 distinct people, TripFly 15 (14 named team members plus shared Adam),
+Crypora 13, 33 project assignments and eight explicitly planned TripFly milestones.
+Repeated import validation creates zero duplicate rows. Existing records and
+nonempty fields are preserved, with conflicts reported. Verified formal lines:
+company leaders to Alaa; Leen to Mahmoud; Yara/Lara to Shaden. Other collaborating
+relationships are not converted into assumed managers or personal mentors.
+All imported members/assignments/milestones use existing audited edit endpoints.
+The private directory is never included in this public repository or client build.
+
+Five actual, bounded GitHub activity snapshots were collected through the
+connected account: website, TripFly, Crypto-Intel and both organization CI/CD
+repositories. They include commits, attributed contributor activity, PRs, selected
+reviews, issues, workflow runs and releases, with collection caps and timestamps.
+Deployment/contributor-directory/security endpoints were unavailable through that
+connection. No name-based identity matches are made. Runtime App authorization is
+still required for ongoing signed-webhook/scheduler synchronization. The Settings
+import supports automatic operator upload if App source read is not yet authorized.
+
+New guarded Cloud & Startup Credits pages expose provider-specific entitlement
+lots, resources, aggregate AI data, actual cost charts, existing budgets, forecasts,
+on-screen alerts and audited resource allocation when APIs authorize them.
+Missing authorization is a visible unavailable state, never fabricated amounts.
+See docs/cloud-authorization.md for exact remaining consent and explicit limits.
+No cloud write, IAM, paid monitor, resource deletion or trading operation occurred.

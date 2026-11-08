@@ -1,3 +1,4 @@
+import {bootstrapCompany} from '../../server/bootstrap.js';
 import {guard} from '../../server/access.js';
 import {kinds,validateRecord,validateMember} from '../../server/policy.js';
 import {visibleData,mutateState} from '../../server/store.js';
@@ -5,7 +6,7 @@ export const config={api:{bodyParser:{sizeLimit:'64kb'}}};
 export default async function handler(req,res){
  const access=await guard(req,res);if(!access)return;const {store,user}=access;
  try{
-  if(req.method==='GET'){const {value}=await store.read();return res.json({data:visibleData(value),updated_at:new Date().toISOString(),source:'Private Vercel storage',limit:1000});}
+  if(req.method==='GET'){let bootstrap;try{bootstrap=await bootstrapCompany(store,user.id);}catch{bootstrap={status:'error',reason:'Verified source import failed; no partial write applied'};}const {value}=await store.read();return res.json({bootstrap,data:visibleData(value),updated_at:new Date().toISOString(),source:'Private Vercel storage',limit:1000});}
   if(!['POST','PATCH'].includes(req.method))return res.status(405).end();
   if(JSON.stringify(req.body||{}).length>50000)return res.status(413).json({error:'Payload too large'});
   const {entity,id,version,values,kind}=req.body||{};

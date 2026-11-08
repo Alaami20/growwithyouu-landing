@@ -1,0 +1,12 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Effect": "Allow",
+    "Principal": {"Federated": "arn:aws:iam::<AUTHORIZED_ACCOUNT_ID>:oidc-provider/oidc.vercel.com/alaamiari-1018s-projects"},
+    "Action": "sts:AssumeRoleWithWebIdentity",
+    "Condition": {"StringEquals": {
+      "oidc.vercel.com/alaamiari-1018s-projects:aud": "https://vercel.com/alaamiari-1018s-projects",
+      "oidc.vercel.com/alaamiari-1018s-projects:sub": "owner:alaamiari-1018s-projects:project:growwithyouu-landing:environment:production"
+    }}
+  }]
+}
